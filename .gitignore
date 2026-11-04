@@ -1,0 +1,16 @@
+# Reader-created, disposable practice repositories
+/practice/
+# Local editor and OS files
+.DS_Store
+.vscode/
+.idea/
+*.swp
+# Secrets and credential material
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+# Python temporary files if tools are extended
+__pycache__/
+*.pyc

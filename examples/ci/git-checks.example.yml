@@ -1,0 +1,21 @@
+# OPTIONAL workflow for a disposable GitHub practice repository.
+# Copy this to .github/workflows/git-checks.yml in YOUR OWN practice repo.
+# It is not active in the companion repository.
+name: Practice Git checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check whitespace
+        run: git diff --check HEAD~1 HEAD || git diff --check
+      - name: Check required files
+        run: |
+          test -f README.md
+          test -f config/app.yaml
