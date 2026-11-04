@@ -42,6 +42,17 @@ This repository contains small practice-project files, ten chapter guides, refer
 
 Read [Setup and prerequisites](docs/SETUP.md) first.
 
+### Clone the companion repository
+
+From your terminal, navigate to the folder where you want to keep the learning materials, then run:
+
+```bash
+git clone https://github.com/vebai/git-team-workflows.git
+cd git-team-workflows
+```
+
+You are now in the companion repository. Run the practice setup below to create a **separate, disposable Git repository** for exercises. Keep your experimental commits, branches and recovery drills out of the companion repository itself.
+
 ### Quick start — isolated local practice
 
 From the **cloned companion repository root**:
