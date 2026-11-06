@@ -1,6 +1,5 @@
-# OPTIONAL workflow for a disposable GitHub practice repository.
-# Copy this to .github/workflows/git-checks.yml in YOUR OWN practice repo.
-# It is not active in the companion repository.
+# Corrected OPTIONAL example for a disposable practice repository.
+# For this companion repo itself, use companion-validation.workflow.yml instead.
 name: Practice Git checks
 on:
   pull_request:
@@ -13,8 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check whitespace
-        run: git diff --check HEAD~1 HEAD || git diff --check
+      - name: Check whitespace across the small practice project
+        # Avoid `git diff ... || git diff --check` because the fallback can mask failure.
+        run: git diff --check "$(git hash-object -t tree /dev/null)" HEAD
       - name: Check required files
         run: |
           test -f README.md
