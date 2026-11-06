@@ -1,5 +1,5 @@
 # Corrected OPTIONAL example for a disposable practice repository.
-# For this companion repo itself, use companion-validation.workflow.yml instead.
+# For this companion repo itself, see .github/workflows/validation.yml.
 name: Practice Git checks
 on:
   pull_request:
