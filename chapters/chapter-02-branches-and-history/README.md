@@ -1,38 +1,68 @@
 # Chapter 2 — Work with commits, branches and history
 
-**Goal:** See that branches identify lines of work and commits preserve snapshots.
+**Manuscript alignment:** Section 2.17, Practice Lab. **Continue the git-practice repository from Chapter 1**, with its initial commit and clean main branch. Do not create a replacement pre-committed project for the primary exercise.
 
-**Starting state:** From the companion repository root, create a fresh practice repository.
+## Preconditions — inspect before branching
 
-```bash
-bash scripts/new-practice-repo.sh ch02-branches
-cd practice/ch02-branches
-git switch -c feature/update-notes
-printf '\n- Feature work in progress.\n' >> docs/notes.md
-git add docs/notes.md
-git commit -m "Record feature notes"
-```
-
-Inspect the current branch and its commits:
-
-```bash
+~~~bash
+cd ~/git-practice
 git status
 git branch --show-current
-git log --oneline --decorate --graph --all -5
-git log --oneline main..feature/update-notes
-git diff main...feature/update-notes
-```
+git log --oneline -3
+~~~
 
-Switch to `main` and inspect the files:
+If you used a different Chapter 1 folder name, enter that directory instead. Confirm the worktree is clean and main exists; if you are on another branch, return using git switch main. Stop if the expected Chapter 1 commit is missing.
 
-```bash
-git switch main
+## Build — isolate feature work
+
+~~~bash
+git switch -c feature/add-team-notes
+git branch --show-current
+echo "Team workflow notes" > team-notes.md
 git status
-cat docs/notes.md
-git switch feature/update-notes
-cat docs/notes.md
-```
+git add team-notes.md
+git commit -m "Add team notes file"
+echo "Use branches for separate work." >> team-notes.md
+git add team-notes.md
+git commit -m "Add branch workflow note"
+~~~
 
-The feature note appears only when the feature branch is checked out. Inspecting `git log` and `git diff` explains the difference before a merge.
+**Observe:** main has not moved. The feature branch contains two new commits. Inspect the branch graph before making any integration decision.
 
-**Verify:** `git branch -avv`, `git log --graph --all --oneline`. The branch remains local. No shared history has been changed.
+~~~bash
+git log --oneline --graph --decorate --all
+git log main..feature/add-team-notes --oneline
+git diff main...feature/add-team-notes
+~~~
+
+## Prove branch isolation — an expected failure
+
+~~~bash
+git switch main
+git branch --show-current
+cat team-notes.md
+~~~
+
+The cat command is **expected to report that the file does not exist** on main. This is evidence of two different committed project states, not a broken lab. Never create a replacement file on main to silence this message.
+
+Return to the feature branch and verify both lines:
+
+~~~bash
+git switch feature/add-team-notes
+cat team-notes.md
+git status
+git log --oneline --graph --decorate --all
+~~~
+
+Expected content:
+
+~~~text
+Team workflow notes
+Use branches for separate work.
+~~~
+
+**Decision rule:** a branch identifies a line of history; switching branches changes which committed snapshot is checked out. Do not merge this exercise into main unless explicitly practising a separate integration later.
+
+## Optional independent starter
+
+If you want an isolated companion-only example, [new-practice-repo.sh](../../scripts/new-practice-repo.sh) can create a fresh practice repository. That optional path has a **different starting state and names** and does not replace the book's Chapter 1 → Chapter 2 continuity.
