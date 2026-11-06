@@ -1,54 +1,72 @@
 # Chapter 1 — Set up Git and create your first repository
 
-**Goal:** Understand the working tree, staging area and commits. Learn to inspect before changing anything.
+**Manuscript alignment:** Section 1.11, Practice Lab. This is the **primary book exercise**, starting with an empty repository. Chapter 2 continues this exact repository. Do not run these commands inside the published companion repository.
 
-**Starting state:** Git is installed and an author name and email are configured. Run commands from the **companion repository root** unless a step says to enter the practice directory.
+## Preconditions and location
 
-## Create an isolated practice project
+Git and your author identity must be configured (see [Setup](../../docs/SETUP.md)). Run the exercise from your own home directory. Check whether a directory named **git-practice** already exists and inspect it rather than overwriting or deleting it. You may choose a different empty directory; use the same directory in Chapter 2.
 
-```bash
-bash scripts/new-practice-repo.sh ch01-first-repo
-cd practice/ch01-first-repo
+## Build — create an empty repository
+
+~~~bash
+cd ~
+mkdir git-practice
+cd git-practice
+git init
+git branch -M main
 git status
-git log --oneline -3
-```
+~~~
 
-The script created a new, independent Git repository with its first commit. The working tree should be clean and the branch should be `main`.
+Expected: **main**, no commits yet. The explicit branch rename accommodates Git installations with different initial-branch defaults.
 
-## Make and inspect a change
+Create the two project files described in the book:
 
-```bash
-printf '\n## Getting started\n' >> README.md
+~~~bash
+echo "# Git Practice" > README.md
+echo "This repository is for learning Git workflows." >> README.md
+cat > .gitignore <<'EOF'
+.env
+*.pem
+*.key
+.aws/
+*.tfstate*
+*.log
+dist/
+build/
+node_modules/
+.vscode/
+.idea/
+EOF
+touch example.log
 git status
-git diff
-git add README.md
-git diff --staged
-git commit -m "Document getting started"
-git log --oneline -3
-```
+git check-ignore -v example.log
+~~~
 
-Expected: the README changed, the change appeared in the staging diff, and Git created a second commit.
+**Observe:** README.md and .gitignore are untracked; example.log is ignored. Ignore rules do not remove secrets already committed to Git history.
 
-## Practise unstaging without losing work
+## Stage, inspect, commit and verify
 
-```bash
-printf '\nOne more note.\n' >> README.md
-git add README.md
-git restore --staged README.md
+~~~bash
+git add README.md .gitignore
 git status
-git diff
-```
+git diff --cached --check
+git diff --cached
+git commit -m "Initial project setup"
+git log --oneline
+git status
+git ls-files
+~~~
 
-The edit should remain in the working file but no longer be staged. Keep or commit the edit deliberately.
+**Verify:** exactly README.md and .gitignore are tracked; the worktree is clean; the ignored log is not committed. The core mental model is **working directory → staging area → repository**.
 
-## Check secret exclusion
+**Checkpoint:** Leave this repository in place for Chapter 2; do **not** start a fresh project for the next chapter.
 
-```bash
-printf 'local-test-only\n' > .env
-git check-ignore -v .env
-git status --short
-```
+## Optional independent exercise
 
-`.env` should be ignored. Git ignore rules do **not** remove sensitive values already committed to history.
+The companion's [starter-project helper](../../scripts/new-practice-repo.sh) creates a different **pre-committed** disposable repository for extra command practice. It is not the starting state for manuscript Section 1.11. To try it, return to the companion root and choose a new name:
 
-**Finish:** `git status`, `git log --oneline -3`. Work only inside this disposable practice directory. Return to the companion root with `cd ../..`.
+~~~bash
+bash scripts/new-practice-repo.sh extra-ch01
+~~~
+
+**Engineering decision:** inspect the current directory and expected starting state before executing commands. Do not modify the companion repository's own history.
