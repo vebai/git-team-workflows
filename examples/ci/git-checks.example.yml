@@ -11,7 +11,7 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Check whitespace across the small practice project
         # Avoid `git diff ... || git diff --check` because the fallback can mask failure.
         run: git diff --check "$(git hash-object -t tree /dev/null)" HEAD
