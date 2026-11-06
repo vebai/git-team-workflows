@@ -30,6 +30,29 @@ The objective is not just learning Git syntax. It is learning when an action is 
 
 These links open retailer searches, not a claim that a particular edition is currently listed.
 
+## Follow the book's manuscript-aligned labs
+
+The ten chapter guides now follow the **latest paperback manuscript (version 7)** as the primary route, rather than substituting unrelated starter exercises.
+
+- **Chapters 1 → 2**: create an empty local **git-practice** repository, then continue it on **feature/add-team-notes**.
+- **Chapters 3 → 4**: connect to a separate empty hosted **remote-practice** repository, publish **feature/add-note**, then open, update, merge and verify that branch's real PR.
+- **Chapters 5–7**: use isolated **merge-rebase-lab**, **conflict-lab**, **recovery-lab** and **tags-lab** directories for deliberate failure, recovery and release-tag exercises.
+- **Chapters 8–9**: distinguish modeled branch protection from server-enforced policy, and actual CI run evidence from a check that is merely available.
+- **Chapter 10**: perform the final hosted project with **feature/add-contributing-guide**, the **Reporting Issues** feedback update and a verified annotated practice tag.
+
+**Important distinction:** This is the published **companion** repository containing teaching resources. The book's hosted *practice* repositories are temporary projects owned or authorised by the reader. Do not push experimental branches, recovery history or book release tags to this published companion.
+
+The [starter-project helper](scripts/new-practice-repo.sh), example files, and standalone extended validation kit are **supplements**, not replacements for the manuscript's stated starting states. The book remains usable without the companion.
+
+For publication QA, the existing [static checks](tests/validate-files.sh) and the new [manuscript-alignment checks](tests/validate-chapter-alignment.sh) can be run from the companion root:
+
+~~~bash
+bash tests/validate-files.sh
+bash tests/validate-chapter-alignment.sh
+~~~
+
+The GitHub Actions workflow runs both. These checks test repository structure and guide continuity; they do not impersonate hosted reviewer approvals or branch protection.
+
 ## Use the companion repository
 
 This repository contains small practice-project files, ten chapter guides, reference examples, and safe local setup scripts. **Do not use this public companion repository as the target for your Git experiments.** Create independent practice repositories.
