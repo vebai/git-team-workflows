@@ -1,43 +1,83 @@
-# Chapter 3 — Connect local work to remote repositories
+# Chapter 3 — Connect local work to a practice remote
 
-**Goal:** Distinguish `fetch`, `pull` and `push`, and understand `origin` and remote-tracking branches.
+**Manuscript alignment:** Section 3.13, Practice Lab. The **primary** book path uses an empty GitHub repository named **remote-practice**, or an authorised organisation-provided equivalent. A local bare-remote simulation remains an optional alternative.
 
-The first path uses a **local bare repository** as a safe stand-in for a hosted remote. It needs no GitHub credentials.
+The book's practice remote is **not** the published [Git Team Workflows companion](../../README.md). Readers must never push exercise history or tags to the public companion.
 
-From the companion repository root:
+## Preconditions — choose and inspect the remote
 
-```bash
-bash scripts/new-practice-repo.sh ch03-remotes
-mkdir -p practice/remotes
-git init --bare practice/remotes/ch03-shared.git
-git -C practice/ch03-remotes remote add origin "$(pwd)/practice/remotes/ch03-shared.git"
-git -C practice/ch03-remotes push -u origin main
-git clone practice/remotes/ch03-shared.git practice/ch03-teammate
-```
+Create a new **empty** hosted practice repository under an account you control. Do not initialise it with a README, licence or .gitignore. Verify the owner and URL. Use HTTPS (as in the book) or your organisation's approved method. Configure Git author identity and authenticate via a credential manager or approved SSH setup; do not paste tokens into commands or commit them.
 
-Simulate another contributor updating the shared repository:
+Before creating a local directory, inspect whether ~/remote-practice already exists; choose another directory such as ~/remote-practice-local if needed. The following example assumes the default name is available.
 
-```bash
-printf '\n- A teammate added this note.\n' >> practice/ch03-teammate/docs/notes.md
-git -C practice/ch03-teammate add docs/notes.md
-git -C practice/ch03-teammate commit -m "Add teammate note"
-git -C practice/ch03-teammate push origin main
-```
+## Build and push main
 
-On your first local repository, **fetch before integrating**:
+~~~bash
+cd ~
+mkdir remote-practice
+cd remote-practice
+git init
+git branch -M main
+echo "# Remote Practice" > README.md
+git add README.md
+git commit -m "Initial commit"
+git status
+git branch --show-current
+~~~
 
-```bash
-git -C practice/ch03-remotes fetch origin
-git -C practice/ch03-remotes log --oneline main..origin/main
-git -C practice/ch03-remotes diff main..origin/main
-git -C practice/ch03-remotes pull --ff-only origin main
-git -C practice/ch03-remotes status
-```
+Copy the actual remote URL from your hosting platform. Replace YOUR-USERNAME in the following example; the public companion repository must not be substituted.
 
-Expected: after fetching, `origin/main` is ahead. After the fast-forward pull, both local `main` and the remote-tracking branch identify the same commit.
+~~~bash
+git remote add origin https://github.com/YOUR-USERNAME/remote-practice.git
+git remote -v
+git push -u origin main
+~~~
 
-## Optional real GitHub/GitLab remote
+**Verify:** the hosted remote shows the committed README; main tracks origin/main.
 
-Create a separate **disposable repository in your own account**, configure HTTPS or SSH authentication, and repeat the remote workflow there. Do not push exercise branches or tags to the published companion repository.
+## Deliberately create remote-only history
 
-**Verify:** inspect `git remote -v`, `git branch -avv`, and `git log --oneline --graph --all`. Confirm you know which repository will receive a push.
+On the hosting platform, edit README.md directly on **remote main** and append this exact line, committing it through the web interface:
+
+~~~text
+Remote change for pull practice.
+~~~
+
+Before pulling, local main must still point to the previous commit. On your computer:
+
+~~~bash
+git fetch origin
+git log --oneline --graph --decorate --all
+cat README.md
+~~~
+
+**Observe:** origin/main has advanced, but local main and README.md have not changed. Fetch updates remote-tracking knowledge, not the checked-out working file.
+
+~~~bash
+git switch main
+git pull --ff-only origin main
+cat README.md
+git status
+~~~
+
+**Verify:** README.md now contains the remote-only line. If a fast-forward is refused, stop and inspect; do not force-push or reset merely to complete the exercise.
+
+## Create the branch used in Chapter 4
+
+~~~bash
+git switch -c feature/add-note
+echo "This repository is connected to a remote." >> README.md
+git add README.md
+git commit -m "Update README"
+git push -u origin feature/add-note
+git fetch origin
+git branch -r
+git remote -v
+git status
+~~~
+
+Expected remote-tracking names include origin/main and origin/feature/add-note. **Keep this branch and remote intact**: Chapter 4 reviews and merges precisely this work.
+
+## Optional offline alternative
+
+If GitHub or GitLab authentication is unavailable, use the companion's local-bare-remote exercise or the extended validation kit to practise the **fetch → inspect → pull** Git semantics offline. A bare remote does not prove HTTPS/SSH authentication, web editing or hosted permissions. Record those evidence limits.
