@@ -18,6 +18,8 @@ jobs:
           fetch-depth: 0
       - name: Verify repository files and Markdown links
         run: bash tests/validate-files.sh
+      - name: Verify manuscript v7 chapter alignment
+        run: bash tests/validate-chapter-alignment.sh
       - name: Reject whitespace errors in tracked source
         run: |
           empty_tree="$(git hash-object -t tree /dev/null)"
