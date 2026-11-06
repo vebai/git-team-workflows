@@ -1,0 +1,30 @@
+# Optional ACTIVE workflow proposed for a feature-branch PR to vebai/git-team-workflows.
+# Keep Actions enabled only when the repository owner chooses to use them.
+name: Git Team Workflows companion validation
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source and complete Git history
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Verify repository files and Markdown links
+        run: bash tests/validate-files.sh
+      - name: Reject whitespace errors in tracked source
+        run: |
+          empty_tree="$(git hash-object -t tree /dev/null)"
+          git diff --check "$empty_tree" HEAD
+      - name: Verify companion lab entry points
+        run: |
+          test -f README.md
+          test -f chapters/chapter-10-final-project/README.md
+          test -f docs/SETUP.md
+          test -f examples/ci/git-checks.example.yml
