@@ -1,30 +1,69 @@
-# Chapter 4 — Review changes with a pull request
+# Chapter 4 — Review and merge the existing feature branch
 
-**Goal:** Propose a focused change, explain it, observe feedback and integrate only when appropriate.
+**Manuscript alignment:** Sections 4.9–4.10. **Continue directly from Chapter 3** using the same hosted remote-practice repository and the already-pushed **feature/add-note** branch. A new docs/contribution-guide repository is not the book's primary Chapter 4 lab.
 
-**Starting state:** A disposable GitHub/GitLab repository in **your own account**, initialised with `README.md`, with `main` as its default branch. You need permission to create branches and open PRs/MRs. The companion repo is not the PR destination.
+## Confirm the actual starting state
 
-From a directory outside this companion repository, clone your practice remote:
-
-```bash
-git clone YOUR_PRACTICE_REMOTE_URL git-review-lab
-cd git-review-lab
+~~~bash
+cd ~/remote-practice
 git status
-git switch -c docs/contribution-guide
-```
+git branch -vv
+git remote -v
+git fetch origin
+git branch -r
+~~~
 
-Replace `YOUR_PRACTICE_REMOTE_URL` with the URL of **your** repository. Add a short contribution guide, using `examples/review/CONTRIBUTING.example.md` as an optional reference. You can copy it from the companion repository or write a shorter version yourself.
+Use the alternative directory from Chapter 3 if you chose one. Verify that origin points to your **disposable** remote and that origin/feature/add-note exists. Do not continue with unrelated work or an unexpected remote.
 
-```bash
-printf '# Contribution guide\n\nCreate a focused branch and request review.\n' > CONTRIBUTING.md
-git add CONTRIBUTING.md
-git diff --staged
-git commit -m "Add contribution guide"
-git push -u origin docs/contribution-guide
-```
+## Open and inspect a real PR/MR
 
-On your hosting platform, open a PR/MR **from `docs/contribution-guide` into `main`**. Use the description prompts from `examples/review/PULL_REQUEST.example.md`. Inspect the Files Changed tab before approving anything.
+On your hosting platform, open a pull request or merge request with:
 
-For solo practice, edit `CONTRIBUTING.md` once more on the branch, commit and push; observe the PR update. A self-review or simulated comment is **practice**, not an independently enforced team approval.
+- **Source:** feature/add-note
+- **Target:** main
+- **Title:** Update README with remote connection note
+- **Summary:** Updated README.md with a note about the remote connection
+- **Why:** Readers should understand that the repository is connected to a remote
+- **Testing:** Reviewed the intended Markdown locally
+- **Risk:** Low; documentation-only change
 
-**Verify:** review the branch, PR target, diff, checks and actual merge state. Only merge the disposable practice PR when it is appropriate and permitted by the repository policy.
+Inspect the Files Changed tab, commits, source/target, review state and configured checks **before** integrating. If the repository has no automated checks or enforced approvals, say so; do not present absent controls as passing ones.
+
+## Update the same PR after practice feedback
+
+For independent practice, make one clarification on the **existing source branch**:
+
+~~~bash
+git switch feature/add-note
+git status
+echo "Changes are reviewed before merging into main." >> README.md
+git diff
+git add README.md
+git diff --cached
+git commit -m "Clarify remote connection note"
+git push
+~~~
+
+Return to the **same** PR/MR in the browser. Confirm it displays the new commit and the README clarification. This demonstrates **change → inspect → commit → push → existing PR updates**. A solo update or self-review is not independent approval.
+
+## Check readiness, integrate and verify locally
+
+Inspect any requested reviews, mergeability, configured required checks and permitted merge methods. If GitHub/GitLab blocks integration, diagnose the displayed reason rather than bypassing a rule. Merge in the browser only when the platform and your policy permit it; confirm it reports a **merged** PR/MR and remote main contains the changes.
+
+Then verify the integration in your local clone:
+
+~~~bash
+git switch main
+git fetch origin
+git log --oneline --graph --decorate --all
+git merge --ff-only origin/main
+cat README.md
+git status
+git branch -vv
+~~~
+
+The README should contain both the remote-connection note and the review clarification. If fast-forward fails, stop and inspect divergent history; do not force-reset main.
+
+**Evidence chain:** Feature branch → hosted PR → review/update → merge → origin/main → local fast-forward → verified main.
+
+**Optional standalone exercise:** The [example contribution guide](../../examples/review/CONTRIBUTING.example.md) can support a separate docs/contribution-guide PR for additional practice, but it does not replace the book's Chapter 3 → 4 branch continuity.
