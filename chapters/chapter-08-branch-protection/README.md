@@ -1,31 +1,68 @@
-# Chapter 8 — Understand branch protection and review gates
+# Chapter 8 — Evaluate branch protection as an evidence gate
 
-**Goal:** Distinguish local Git operations from rules enforced by a hosted repository.
+**Manuscript alignment:** Section 8.10, Practice Lab. A Git branch name does not enforce a server-side policy. The **required** book work is the decision model and recovery reasoning; observing actual GitHub/GitLab enforcement is **optional** and needs an authorised, disposable hosted repository.
 
-**Starting state:** A disposable hosted repository in your own GitHub/GitLab account, with a default `main` branch and a feature branch. Use the host's web interface.
+## Worked example — what permits integration?
 
-## Inspect the policy first
+Assume a server requires both an approved review and a passing required check, with sufficient permissions and all other conditions satisfied.
 
-1. Open your practice repository's **Settings** page.
-2. Find branch protection or repository rules/rulesets (availability and labels depend on your provider and plan).
-3. Check whether changes to `main` require a PR/MR, approvals, passing checks and up-to-date target-branch state.
-4. Check which identities, if any, may bypass the rules.
-5. **Do not change restrictions on an important shared or production repository.**
+| Observed evidence | Is integration eligible? | Reason |
+| --- | --- | --- |
+| Approval missing; required check PASS | **No** | Required review is absent |
+| Approval present; required check FAIL | **No** | Required automated evidence is unsatisfied |
+| Approval present; required check PASS | **Potentially yes** | Other configured requirements and permissions must still be satisfied |
 
-In your local **practice** clone, collect evidence:
+**Decision rule:** passing one requirement does not cancel another failing or missing requirement. A successful workflow run does **not** by itself prove that a check was configured as **required**.
 
-```bash
-git status
+## Recovery scenario — rejected direct main push
+
+This is a conceptual exercise unless you have a disposable remote configured to reject direct pushes. Suppose a locally committed change on main is rejected by the server:
+
+~~~bash
+git push origin main
+~~~
+
+A rejected push **does not delete the local commit**. In an explicitly disposable repository where the rejected commit is still HEAD, preserve it on a feature branch:
+
+~~~bash
+git switch -c feature/protected-work
 git branch --show-current
+git log -1 --oneline
+git push -u origin feature/protected-work
+~~~
+
+Only execute the final push when you have verified the correct disposable remote and have feature-branch permissions. Local main may still reference the commit; resetting main is a separate decision **not required** by this recovery exercise.
+
+## Optional Path A — inspect and test real protection
+
+Use a disposable hosted repo whose settings you may administer. **Do not enable/disable restrictions on an important shared repository.** First establish the intended starting state:
+
+~~~bash
+git rev-parse --show-toplevel
 git remote -v
+git status
+git switch main
 git fetch origin
-git branch -avv
-```
+git merge --ff-only origin/main
+git log -1 --oneline
+~~~
 
-## Optional policy test
+In GitHub or GitLab, inspect the current repository settings for branch protection or rulesets. If available, enable **one** suitable requirement for main, such as integration through a PR or a required check. Then create a normal feature branch and open a PR:
 
-If your account and host settings permit it, enable a modest rule **only on your disposable repository**, then propose a change through a PR rather than directly pushing to `main`. Examine the actual review/check requirements. Record which requirement is enforced and which you have merely simulated.
+~~~bash
+git switch -c feature/protection-test
+echo "Protection test" > protection-test.txt
+git status
+git add protection-test.txt
+git diff --cached
+git commit -m "Test protected branch workflow"
+git push -u origin feature/protection-test
+~~~
 
-**Troubleshooting:** if a push or merge is rejected, inspect the message and repository rules. Preserve your feature branch and submit the intended change through the approved path; do not bypass the protection or force push.
+In the hosting interface, record **which actual rule** applies, the displayed merge eligibility and whether the requirement was satisfied. Do not assume that a blocked merge or rejected push proves a particular rule without inspecting the evidence.
 
-**Verify:** Describe what the platform enforces, whether a required check ran, and why a merge did or did not proceed. A local branch name alone does not enforce protection.
+## Optional Path B — inspect existing rules without changing them
+
+If you cannot administer branch protection, inspect the policy and PR/MR state of a repository you are permitted to view. Record observed requirements and unresolved conditions. If rules are unavailable, explicitly record **not enforced / not verified**, rather than treating a local simulation as hosted protection.
+
+**Companion note:** The public book repository has been used to demonstrate a real PR and CI checks. Those observations are **not evidence of required approvals or enforced branch protection** unless the server's actual rules and integration decisions demonstrate it.
