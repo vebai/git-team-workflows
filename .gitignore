@@ -1,0 +1,11 @@
+.DS_Store
+.env
+*.pem
+*.key
+*.log
+.aws/
+*.tfstate*
+practice/
+runs/
+__pycache__/
+.venv/

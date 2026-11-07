@@ -1,0 +1,3 @@
+app:
+  name: git-practice
+  environment: development
