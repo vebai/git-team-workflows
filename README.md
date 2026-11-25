@@ -6,6 +6,12 @@ This repository accompanies the book. The book explains the concepts, engineerin
 
 The examples are designed for practice. **Do not run history-changing exercises inside this cloned companion repository.** Use the separate local practice folders described in each guide, and your own disposable GitHub or GitLab repository when a chapter requires a hosted remote.
 
+## Get the book on Amazon
+
+**Paperback:** [Amazon UK](https://www.amazon.co.uk/dp/B0HNP7SJG2) · [Amazon US](https://www.amazon.com/dp/B0HNP7SJG2) · [Amazon India](https://www.amazon.in/dp/B0HNP7SJG2)
+
+**Kindle eBook:** [Amazon UK](https://www.amazon.co.uk/dp/B0HDW16XG3) · [Amazon US](https://www.amazon.com/dp/B0HDW16XG3) · [Amazon India](https://www.amazon.in/dp/B0HDW16XG3)
+
 ## How to use this repository
 
 **1. Prepare Git.** Follow [Setup and prerequisites](docs/SETUP.md) to install Git, configure your commit identity and check your tools.
